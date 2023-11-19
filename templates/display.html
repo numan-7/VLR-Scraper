@@ -5,15 +5,110 @@
     {% load static %}
     {% include "bootstrap.html" %}
 </head>
-<body class = "bg-dark">
-    <div class="container mt-4">
+<style>
+/* General Styles */
+body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Card Styles */
+.custom-card {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #ffffff;
+    margin: 20px 0;
+}
+
+.custom-header {
+    background-color: #eeeeee;
+    color: #333333;
+    font-size: 1.2rem;
+    border-radius: 8px 8px 0 0;
+}
+
+.custom-body {
+    padding: 20px;
+}
+
+/* Spinner Styles */
+.custom-spinner-container {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-border {
+    color: #007bff; /* Bootstrap primary blue */
+}
+
+/* Post Card Styles */
+.custom-post-card {
+    border: none;
+    margin-bottom: 15px;
+}
+
+/* Typography */
+.custom-title {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.custom-text {
+    margin-bottom: 10px;
+}
+
+/* Button Styles */
+.custom-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.custom-btn:hover {
+    background-color: #0056b3;
+}
+
+
+/* Stat Card Body */
+.stat-card-body {
+    padding: 20px;
+}
+
+/* Stat Items */
+.stat-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.stat-value {
+    color: #007bff; /* Highlight color */
+}
+
+/* Button Margin Top */
+.custom-btn.mt-2 {
+    margin-top: 20px;
+}
+</style>
+<body style = "height: 90vh !important;">
+    <div class="container mt-4 h-100">
         <form method="post" autocomplete="off" action = "">
             <input autocomplete="false" name="hidden" type="text" style="display:none;">
             {% csrf_token %}
             <div class="row justify-content-center">
                 {{ form.as_table }}
                 <button type="submit" id="scrapeBtn" class="ml-2 btn btn-primary border-top-0 " >
-                    <div id = "spinner" style = "display: none;">
+                    <div id = "spinny" style = "display: none;">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         <span class="sr-only">Loading...</span>
                     </div>
@@ -23,30 +118,52 @@
         </form>
         <hr>
         <div class="row justify-content-center">
-            <table class="table table-sm table-hover table-bordered table-dark table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Upvotes</th>
-                        <th scope="col">Downvotes</th>
-                        <th scope="col">Net Votes</th>
-                        <th scope="col">Biggest Upvote</th>
-                        <th scope="col">Biggest Upvote URL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for post in posts %}
-                        <tr>
-                            <td>{{ post.upvotes }}</td>
-                            <td>{{ post.downvotes }}</td>
-                            <td>{{ post.upvotes|add:post.downvotes }}</td>
-                            <td>{{ post.biggest_upvote }}</td>
-                            <td><a href="{{ post.biggest_upvote_url }}" target="_blank">{{ post.biggest_upvote_url }}</a></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <div class="card custom-card w-50">
+                <div class="card-header custom-header">
+                    {% if is_completed == 1 %}
+                        {{task_id}}'s Statistics
+                    {% elif first_time == 1 %}
+                        Welcome!
+                    {% else %}
+                        Searching...
+                    {% endif %}
+                </div>
+                <div class="card-body custom-body">
+                    {% if is_completed == 0 and first_time == 0 %}
+                        <div class="d-flex justify-content-center align-items-center custom-spinner-container">
+                            <span class="spinner-border" style="width: 4rem; height: 4rem;" role="status" aria-hidden="true"></span>
+                        </div>
+                    {% elif first_time == 1 %}
+                        <div>enter a username to view stats</div>                    
+                    {% else %}
+                        {% for post in posts %}
+                            <div class="card mb-3 custom-post-card">
+                                <div class="d-flex flex-column align-items-start stat-card-body">
+                                    <h5 class="custom-title">Post Details</h5>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Upvotes:</span>
+                                        <span class="stat-value">{{ post.upvotes }}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Total Downvotes:</span>
+                                        <span class="stat-value">{{ post.downvotes }}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">+/- Votes:</span>
+                                        <span class="stat-value">{{ post.upvotes|add:post.downvotes }}</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Biggest Upvote:</span>
+                                        <span class="stat-value">{{ post.biggest_upvote }}</span>
+                                    </div>
+                                    <a href="{{ post.biggest_upvote_url }}" class="btn custom-btn mt-2" target="_blank">View Biggest Upvote</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>            
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
     $(document).ready(function(){
@@ -54,8 +171,8 @@
         let urlParams = new URLSearchParams(window.location.search);
         let taskId = urlParams.get('task_id');
         if (taskId) {
-            $("#scrapeBtn").prop("disabled",true);
-            $('#spinner').show();
+            $("#scrapeBtn").prop("disabled", true);
+            $('#spinny').show();
             $('#submitText').hide()
             const checkInterval = setInterval(function() {
                 $.ajax({
@@ -71,6 +188,13 @@
             }, 2000);
         }
     });
+    </script>
+    <script>
+        const errorExists = {{ error }}
+        if (errorExists) {
+            $('#submitText').text('Invalid Username');
+            $('#scrapeBtn').addClass("btn-warning");
+        }
     </script>
 </body>
 </html>
