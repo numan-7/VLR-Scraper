@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% load static %}
+    {% include "bootstrap.html" %}
+</head>
+<body class = "bg-dark">
+    <div class="container mt-4">
+        <form method="post" autocomplete="off" action = "">
+            <input autocomplete="false" name="hidden" type="text" style="display:none;">
+            {% csrf_token %}
+            <div class="row justify-content-center">
+                {{ form.as_table }}
+                <button type="submit" id="scrapeBtn" class="ml-2 btn btn-primary border-top-0 " >
+                    <div id = "spinner" style = "display: none;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <span id = "submitText">Search</span>
+                </button>
+            </div>
+        </form>
+        <hr>
+        <div class="row justify-content-center">
+            <table class="table table-sm table-hover table-bordered table-dark table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Upvotes</th>
+                        <th scope="col">Downvotes</th>
+                        <th scope="col">Net Votes</th>
+                        <th scope="col">Biggest Upvote</th>
+                        <th scope="col">Biggest Upvote URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td>{{ post.upvotes }}</td>
+                            <td>{{ post.downvotes }}</td>
+                            <td>{{ post.upvotes|add:post.downvotes }}</td>
+                            <td>{{ post.biggest_upvote }}</td>
+                            <td><a href="{{ post.biggest_upvote_url }}" target="_blank">{{ post.biggest_upvote_url }}</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+        $('label[for="id_username"]').hide();
+        let urlParams = new URLSearchParams(window.location.search);
+        let taskId = urlParams.get('task_id');
+        if (taskId) {
+            $("#scrapeBtn").prop("disabled",true);
+            $('#spinner').show();
+            $('#submitText').hide()
+            const checkInterval = setInterval(function() {
+                $.ajax({
+                    type: "GET",
+                    url: "http://127.0.0.1:8000/check_scrapy_status/" + taskId,
+                    success: function(response) {
+                        if (response.is_completed) {
+                            clearInterval(checkInterval);
+                            window.location.href = "/";
+                        }
+                    }
+                });
+            }, 2000);
+        }
+    });
+    </script>
+</body>
+</html>
