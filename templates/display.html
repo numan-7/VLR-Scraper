@@ -1,200 +1,61 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <head>
     {% load static %}
     {% include "bootstrap.html" %}
-</head>
-<style>
-/* General Styles */
-body {
-    font-family: 'Segoe UI', 'Arial', sans-serif;
-    background-color: #f8f8f8;
-    color: #333;
-    margin: 0;
-    padding: 20px;
-}
-
-/* Card Styles */
-.custom-card {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    background-color: #ffffff;
-    margin: 20px 0;
-}
-
-.custom-header {
-    background-color: #eeeeee;
-    color: #333333;
-    font-size: 1.2rem;
-    border-radius: 8px 8px 0 0;
-}
-
-.custom-body {
-    padding: 20px;
-}
-
-/* Spinner Styles */
-.custom-spinner-container {
-    height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.spinner-border {
-    color: #007bff; /* Bootstrap primary blue */
-}
-
-/* Post Card Styles */
-.custom-post-card {
-    border: none;
-    margin-bottom: 15px;
-}
-
-/* Typography */
-.custom-title {
-    color: #007bff;
-    font-weight: bold;
-}
-
-.custom-text {
-    margin-bottom: 10px;
-}
-
-/* Button Styles */
-.custom-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-}
-
-.custom-btn:hover {
-    background-color: #0056b3;
-}
-
-
-/* Stat Card Body */
-.stat-card-body {
-    padding: 20px;
-}
-
-/* Stat Items */
-.stat-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.stat-label {
-    font-weight: bold;
-    margin-right: 10px;
-}
-
-.stat-value {
-    color: #007bff; /* Highlight color */
-}
-
-/* Button Margin Top */
-.custom-btn.mt-2 {
-    margin-top: 20px;
-}
-</style>
-<body style = "height: 90vh !important;">
-    <div class="container mt-4 h-100">
+    <title>vlr.gg statistics</title>
+    <link rel="shortcut icon" href="/static/images/logo_lt.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{%static 'css/display.css' %}?v=1" />
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class = "user-select">
         <form method="post" autocomplete="off" action = "">
-            <input autocomplete="false" name="hidden" type="text" style="display:none;">
-            {% csrf_token %}
-            <div class="row justify-content-center">
-                {{ form.as_table }}
-                <button type="submit" id="scrapeBtn" class="ml-2 btn btn-primary border-top-0 " >
-                    <div id = "spinny" style = "display: none;">
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <span id = "submitText">Search</span>
+            <div class = "search-container">
+                {% csrf_token %}
+                {{ form.username }}
+                <button type="submit" id="scrapeBtn">
+                    <i id = "submitIcon" class="fa-solid fa-magnifying-glass"></i>
                 </button>
             </div>
         </form>
-        <hr>
-        <div class="row justify-content-center">
-            <div class="card custom-card w-50">
-                <div class="card-header custom-header">
-                    {% if is_completed == 1 %}
-                        {{task_id}}'s Statistics
-                    {% elif first_time == 1 %}
-                        Welcome!
-                    {% else %}
-                        Searching...
-                    {% endif %}
-                </div>
-                <div class="card-body custom-body">
-                    {% if is_completed == 0 and first_time == 0 %}
-                        <div class="d-flex justify-content-center align-items-center custom-spinner-container">
-                            <span class="spinner-border" style="width: 4rem; height: 4rem;" role="status" aria-hidden="true"></span>
-                        </div>
-                    {% elif first_time == 1 %}
-                        <div>enter a username to view stats</div>                    
-                    {% else %}
-                        {% for post in posts %}
-                            <div class="card mb-3 custom-post-card">
-                                <div class="d-flex flex-column align-items-start stat-card-body">
-                                    <h5 class="custom-title">Post Details</h5>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Total Upvotes:</span>
-                                        <span class="stat-value">{{ post.upvotes }}</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Total Downvotes:</span>
-                                        <span class="stat-value">{{ post.downvotes }}</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">+/- Votes:</span>
-                                        <span class="stat-value">{{ post.upvotes|add:post.downvotes }}</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Biggest Upvote:</span>
-                                        <span class="stat-value">{{ post.biggest_upvote }}</span>
-                                    </div>
-                                    <a href="{{ post.biggest_upvote_url }}" class="btn custom-btn mt-2" target="_blank">View Biggest Upvote</a>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-        </div>            
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-    $(document).ready(function(){
-        $('label[for="id_username"]').hide();
-        let urlParams = new URLSearchParams(window.location.search);
-        let taskId = urlParams.get('task_id');
-        if (taskId) {
-            $("#scrapeBtn").prop("disabled", true);
-            $('#spinny').show();
-            $('#submitText').hide()
-            const checkInterval = setInterval(function() {
-                $.ajax({
-                    type: "GET",
-                    url: "http://127.0.0.1:8000/check_scrapy_status/" + taskId,
-                    success: function(response) {
-                        if (response.is_completed) {
-                            clearInterval(checkInterval);
-                            window.location.href = "/";
-                        }
-                    }
-                });
-            }, 2000);
-        }
-    });
-    </script>
-    <script>
-        const errorExists = {{ error }}
-        if (errorExists) {
-            $('#submitText').text('Invalid Username');
-            $('#scrapeBtn').addClass("btn-warning");
-        }
-    </script>
-</body>
+        <button type="button" id="cancelBtn">Cancel</button>                
+        </form>
+    </div>
+
+    <span id = "header-content">
+        {% if is_completed == 1%}
+            {{username}}'s Statistics
+        {% elif first_time == 1 %}
+            Welcome!
+        {% elif error == 1 %}
+            Error Invalid Username
+        {% else %}
+            Searching...
+        {% endif %}
+    </span>
+    {% if is_completed == 0 and first_time == 0 %}
+        <span class="spinner-border" style="width: 4rem; height: 4rem;" role="status" aria-hidden="true"></span>
+    {% elif first_time == 1 %}
+    <div>enter a username to view stats</div>
+    {% elif error == 0%}
+        {% for post in posts %}
+            <span class="stat-label">Total Upvotes:</span>
+            <span class="stat-value">{{ post.upvotes }}</span>
+            <span class="stat-label">Total Downvotes:</span>
+            <span class="stat-value">{{ post.downvotes }}</span>
+            <span class="stat-label">+/- Votes:</span>
+            <span class="stat-value">{{ post.upvotes|add:post.downvotes }}</span>
+            <span class="stat-label">Biggest Upvote:</span>
+            <span class="stat-value">{{ post.biggest_upvote }}</span>
+            <a href="{{ post.biggest_upvote_url }}" target="_blank">View Biggest Upvote</a>
+        {% endfor %}
+    {% endif %}
+    <a href="" target="_blank" class="footer-link"><i class="fab fa-github"></i>View on GitHub</a>                 
+  </body>
+  <script src = "/static/js/display.js"></script>
 </html>

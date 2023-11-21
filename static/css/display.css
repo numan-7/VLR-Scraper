@@ -1,0 +1,82 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --default-font: 'Poppins', sans-serif;
+    --header-color: #111;
+    --body-color: #ece8e1;
+    --border-radius-sm: .5rem;
+}
+
+/* Fonts */
+
+body {
+    width: 100%;
+    height: 100vh;
+    background: var(--body-color);
+    font-family: var(--default-font);
+    color: #fca311;
+}
+
+/* Search Bar */
+
+.user-select {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    padding: 1rem;
+    background: var(--header-color);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+    gap: .5rem;
+}
+
+form label {
+    display: none;
+}
+
+form input {
+    width: 350px;
+    color: #000000;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+form input, #scrapeBtn, #cancelBtn {
+    padding: .25rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    outline: none;
+}
+
+.search-container {
+    position: relative;
+}
+
+#scrapeBtn, #scrapeBtn i, #cancelBtn {
+    color: #fff;
+    background-color: #ff4655;
+}
+
+#scrapeBtn{
+    height: 100%;
+    box-shadow: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#cancelBtn:hover, #scrapeBtn:hover {
+    background-color: #d42c3a;
+}
+
+#scrapeBtn i {
+    background-color: inherit;
+}
+
+#scrapeBtn:disabled {
+    opacity: 75%;
+    cursor: not-allowed;
+}

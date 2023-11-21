@@ -8,5 +8,6 @@ class UserStats(models.Model):
     biggest_upvote_url = models.URLField()
 
 class ScrapyTask(models.Model):
-    task_id = models.CharField(max_length=100, unique=True, null=True)
+    username = models.CharField(max_length=100, unique=True, null=True)
+    task_id = models.CharField(max_length = 100)
     is_completed = models.BooleanField(default=False)

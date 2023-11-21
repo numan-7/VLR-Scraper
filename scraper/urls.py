@@ -21,5 +21,6 @@ urlpatterns = [
     path('', views.scrape_and_display),
     path('scrape_and_display/', views.scrape_and_display, name='scrape_and_display'),
     path('update_scrapy_status', views.update_scrapy_status, name='update_scrapy_status'),
-    path('check_scrapy_status/<str:task_id>/', views.check_scrapy_status, name='check_scrapy_status'),
+    path('check_scrapy_status/<str:username>/', views.check_scrapy_status, name='check_scrapy_status'),
+    path('cancel_scrapy_task/<str:username>/', views.cancel_scrapy_task, name='cancel_scrapy_task'),
 ]

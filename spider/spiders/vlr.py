@@ -51,4 +51,4 @@ class UserPostsSpider(scrapy.Spider):
             yield response.follow(link, self.parse_discussion)
 
     def closed(self, reason):
-        requests.post('http://127.0.0.1:8000/update_scrapy_status', data={'task_id': self.username, 'is_completed': True})
+        requests.post('http://web:8000/update_scrapy_status', data={'task_id': self.username, 'is_completed': True})
