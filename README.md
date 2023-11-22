@@ -1,4 +1,4 @@
-# VLR Scrapy - VLR.gg Web Scraper
+# VLR Scraper - VLR.gg Web Scraper
 
 VLR Scrapy is a web scraper for vlr.gg that allows users to view their upvote/downvote/net counts and their most upvoted/downvoted posts.
 
