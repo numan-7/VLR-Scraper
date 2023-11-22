@@ -8,6 +8,7 @@ COPY . .
 RUN pip3 install --no-cache-dir -r requirements.txt
 # Make port 8000 available to the world outside this container
 EXPOSE 8000
+# Database
 # Run Django server when the container launches
-CMD python manage.py makemigrations djangospider && python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
