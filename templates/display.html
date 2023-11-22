@@ -113,11 +113,9 @@
     const is_completed = {{is_completed}}
     const first_time = {{first_time}}
     const error = {{error}}
-    if( is_completed == 0 && first_time == 0 ) {
+    if ( is_completed == 0 && first_time == 0 ) {
         $('.stat-box').height('35%').width('35%');
-    } else if(first_time == 1) {
-        $('.stat-box').height('35%').width('35%');
-    } else if (error == 0) {
+    } else {
         $('.stat-box').height('50%').width('45%');
     }
 
