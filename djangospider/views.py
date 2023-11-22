@@ -6,7 +6,7 @@ from .models import UserStats, ScrapyTask
 from .tasks import run_scrapy_spider
 import requests
 
-# function to check if a user exists on vlr
+# function to check if a user exists on vlr ^-^
 def user_exists(username):
     try:
         # request the user page

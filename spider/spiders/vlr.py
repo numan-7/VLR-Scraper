@@ -49,6 +49,9 @@ class UserPostsSpider(scrapy.Spider):
 
             upvote_count = int(upvote_count) if upvote_count else 0
             downvote_count = int(downvote_count) if downvote_count else 0
+            
+            if upvote_count == 0 and downvote_count == 0:
+                upvote_count, downvote_count = self.user_is_poster(response)
 
             self.user_item['upvotes'] += upvote_count
             self.user_item['downvotes'] += downvote_count
@@ -80,6 +83,22 @@ class UserPostsSpider(scrapy.Spider):
     def get_full_url(self, post_author, post_url_xpath, response):
         post_url = post_author.xpath(post_url_xpath).get()
         return response.urljoin(post_url)
+
+    def user_is_poster(self, response):
+        # extract the username of the original post author
+        original_post_author = response.xpath('//a[@id="1"]/following-sibling::div[contains(@class, "post-header")]/a[contains(@class, "post-header-author")]/text()').get()
+        if original_post_author and original_post_author.strip() == self.username:
+            # the user is the original poster, proceed to get the count
+            count = response.xpath('//div[@id="thread-frag-count"]/text()').get()
+            count = int(count.strip()) if count else 0
+            if count > 0:
+                return count, 0
+            elif count < 0:
+                return 0, count
+            return 0, 0
+        else:
+            # The user is not the original poster
+            return 0, 0
 
     def closed(self, reason):
         requests.post('http://web:8000/update_scrapy_status', data={'task_id': self.username, 'is_completed': True})
