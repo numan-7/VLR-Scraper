@@ -32,6 +32,11 @@ class UserPostsSpider(scrapy.Spider):
             yield response.follow(link, self.parse_discussion)
 
     def parse_discussion(self, response):
+        # check if the user is the original poster
+        original_post_upvotes, original_post_downvotes = self.user_is_poster(response)
+        # initialize or update the counts with the original post's counts
+        self.user_item['upvotes'] += original_post_upvotes
+        self.user_item['downvotes'] += original_post_downvotes
         # find the user's comment(s) by the a tag
         user_posts = response.css(f'a.post-header-author[href*="/user/{self.username}"]')
         post_url_xpath = "./ancestor::div[contains(@class, 'wf-card post')]/div[contains(@class, 'post-footer')]/div[contains(@class, 'noselect')]/a[contains(@class, 'post-action link')]/@href"                
@@ -46,22 +51,19 @@ class UserPostsSpider(scrapy.Spider):
             
             upvote_count = post_author.xpath('./following-sibling::div[contains(@class,"post-frag-container")]/div[contains(@class,"positive")]/text()').get()
             downvote_count = post_author.xpath('./following-sibling::div[contains(@class,"post-frag-container")]/div[contains(@class,"negative")]/text()').get()
-
+            # yeah
             upvote_count = int(upvote_count) if upvote_count else 0
             downvote_count = int(downvote_count) if downvote_count else 0
-            
-            if upvote_count == 0 and downvote_count == 0:
-                upvote_count, downvote_count = self.user_is_poster(response)
 
             self.user_item['upvotes'] += upvote_count
             self.user_item['downvotes'] += downvote_count
             
-            if upvote_count > self.user_item['biggest_upvote']:
-                self.user_item['biggest_upvote'] = upvote_count
+            if upvote_count > self.user_item['biggest_upvote'] or original_post_upvotes > self.user_item['biggest_upvote']:
+                self.user_item['biggest_upvote'] = upvote_count if upvote_count > original_post_upvotes else original_post_upvotes
                 self.user_item['biggest_upvote_url'] = self.get_full_url(post_author, post_url_xpath, response)
                 self.user_item['biggest_upvote_quote'] = self.get_full_quote(post_author)
-            if downvote_count < self.user_item['biggest_downvote']:
-                self.user_item['biggest_downvote'] = downvote_count
+            if downvote_count < self.user_item['biggest_downvote'] or original_post_downvotes < self.user_item['biggest_downvote']:
+                self.user_item['biggest_downvote'] = downvote_count if downvote_count < original_post_downvotes else original_post_downvotes
                 self.user_item['biggest_downvote_url'] = self.get_full_url(post_author, post_url_xpath, response)
                 self.user_item['biggest_downvote_quote'] = self.get_full_quote(post_author)
 
