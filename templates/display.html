@@ -9,53 +9,142 @@
     <link rel="stylesheet" href="{%static 'css/display.css' %}?v=1" />
     <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   </head>
   <body>
+    <img class = "logo" src = "/static/images/logo_lt.png" alt = "vlr.gg logo" />
     <div class = "user-select">
         <form method="post" autocomplete="off" action = "">
             <div class = "search-container">
                 {% csrf_token %}
                 {{ form.username }}
-                <button type="submit" id="scrapeBtn">
+                <button type="submit" id="scrapeBtn" title = "search for user">
                     <i id = "submitIcon" class="fa-solid fa-magnifying-glass"></i>
                 </button>
             </div>
         </form>
-        <button type="button" id="cancelBtn">Cancel</button>                
+        <button type="button" id="cancelBtn" title = "cancel search" style = "display: none;"><i class="fa-solid fa-ban"></i></button>                
         </form>
     </div>
-
-    <span id = "header-content">
-        {% if is_completed == 1%}
-            {{username}}'s Statistics
-        {% elif first_time == 1 %}
-            Welcome!
-        {% elif error == 1 %}
-            Error Invalid Username
-        {% else %}
-            Searching...
-        {% endif %}
-    </span>
-    {% if is_completed == 0 and first_time == 0 %}
-        <span class="spinner-border" style="width: 4rem; height: 4rem;" role="status" aria-hidden="true"></span>
-    {% elif first_time == 1 %}
-    <div>enter a username to view stats</div>
-    {% elif error == 0%}
-        {% for post in posts %}
-            <span class="stat-label">Total Upvotes:</span>
-            <span class="stat-value">{{ post.upvotes }}</span>
-            <span class="stat-label">Total Downvotes:</span>
-            <span class="stat-value">{{ post.downvotes }}</span>
-            <span class="stat-label">+/- Votes:</span>
-            <span class="stat-value">{{ post.upvotes|add:post.downvotes }}</span>
-            <span class="stat-label">Biggest Upvote:</span>
-            <span class="stat-value">{{ post.biggest_upvote }}</span>
-            <a href="{{ post.biggest_upvote_url }}" target="_blank">View Biggest Upvote</a>
-        {% endfor %}
-    {% endif %}
-    <a href="" target="_blank" class="footer-link"><i class="fab fa-github"></i>View on GitHub</a>                 
+    <div class = "stat-container">
+        <div class = "stat-box">
+            <span id = "stat-header-content">
+                {% if is_completed == 1%}
+                {{username}}'s statistics
+                {% elif first_time == 1 %}
+                    Welcome!
+                {% elif error == 1 %}
+                    Error Invalid Username
+                {% else %}
+                    scraping<span id = "auto-type"></span>
+                {% endif %}
+            </span>
+            {% if is_completed == 0 and first_time == 0 %}
+            <div class = "d-flex justify-content-center align-items-center h-100">
+                {%if error == 0 %}
+                <span class="spinner-border" style="width: 5rem; height: 5rem;" role="status" aria-hidden="true"></span>
+                {% else %}
+                <div class = "text-center">
+                    <img class = "d-block" style = "height: 150px; width: 150px;" src = "/static/images/404.svg" />
+                    <a class = "error-refresh" href = "/">refresh?</a>
+                </div>
+                {% endif %}
+            </div>            
+            {% elif first_time == 1 %}
+            <div class = "first-time">enter a username to view stats</div>
+            {% elif error == 0 %}
+                <div class ="stat-wrapper">
+                    <div class = "vote-wrapper">
+                        <h4>vote statistics</h4>
+                        <div class = "vote-stats-container">
+                            <div class = "vote-stats">
+                                <span id = "stat-up" class = "stat-number">{{ posts.upvotes }}</span>
+                                <span class="stat-label">total upvotes</span>
+                            </div>
+                            <div class = "vote-stats">
+                                <span id = "stat-down" class = "stat-number">{{ posts.downvotes }}</span>
+                                <span class="stat-label">total downvotes</span>
+                            </div>
+                            <div class = "vote-stats">
+                                <span class = "stat-number">{{ posts.upvotes|add:posts.downvotes }}</span>
+                                <span class="stat-label">+/- votes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <hr style = "height: 1px; width: 100%; background-color: #fca311;">
+                    <div class = "quote-wrapper">
+                        <div class = "quote">
+                            <h6 id = "stat-biggest-upvote">most upvotes received: {{ posts.biggest_upvote }}</h6> 
+                            <blockquote>
+                                <p id = "upvoted-quote" class="mb-0">"{{posts.biggest_upvote_quote}}"</p>
+                                <span class="blockquote-footer">{{username}} on 
+                                    <cite title="post link">
+                                        <a id = "upvoted-link" href="{{ posts.biggest_upvote_url }}" target="_blank">vlr.gg</a>
+                                    </cite>
+                                </span>
+                            </blockquote>
+                        </div>
+                        <div class = "quote">
+                            <h6 id = "stat-biggest-downvote">most downvotes received: {{ posts.biggest_downvote }}</h6> 
+                            <blockquote>
+                                <p id = "downvoted-quote" class="mb-0">"{{posts.biggest_downvote_quote}}"</p>
+                                <span class="blockquote-footer">{{username}} on 
+                                    <cite title="post link">
+                                        <a id = "downvoted-link" href="{{ posts.biggest_downvote_url }}" target="_blank">vlr.gg</a>
+                                    </cite>
+                                </span>
+                            </blockquote>
+                        </div>
+                    </div>
+                    <i id = "copyIcon" title = "copy stats" class="fa-regular fa-copy"></i>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <footer>
+        <a href="https://github.com/numan-7/vlr-webscraping" target="_blank" class="footer-link"><i class="fab fa-github"></i> view on github</a>                 
+    </footer>
   </body>
   <script src = "/static/js/display.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script> 
+  <script>
+    const is_completed = {{is_completed}}
+    const first_time = {{first_time}}
+    const error = {{error}}
+    if( is_completed == 0 && first_time == 0 ) {
+        $('.stat-box').height('35%').width('35%');
+    } else if(first_time == 1) {
+        $('.stat-box').height('35%').width('35%');
+    } else if (error == 0) {
+        $('.stat-box').height('50%').width('45%');
+    }
+
+    if(document.getElementById("auto-type")){
+        var typed = new Typed("#auto-type" , {
+            strings: [" ", "..."],
+            typeSpeed: 75,
+            backSpeed: 100,
+            loop: true,
+        })
+    }
+    $("#copyIcon").click(function() {
+        const username = $("#stat-header-content").text().trim(" ");
+        const total_upvotes = parseInt($("#stat-up").text());
+        const total_downvotes = parseInt($("#stat-down").text());
+        const net = total_upvotes + total_downvotes;
+        const biggest_downvote = $("#stat-biggest-downvote").text()
+        const biggest_upvote = $("#stat-biggest-upvote").text()
+        const biggest_upvote_quote = $("#upvoted-quote").text();
+        const biggest_downvote_quote = $("#downvoted-quote").text();
+        const biggest_upvote_quote_url = $("#upvoted-link").attr("href");
+        const biggest_downvote_quote_url = $("#downvoted-link").attr("href");
+        const formatRow = (label, value) => `${label.padEnd(15)}: ${value}`;
+        const text = `${username}\n-----------------------------------\n${formatRow('total upvotes', total_upvotes)}\n${formatRow('total downvotes', total_downvotes)}\n${formatRow('net votes', net)}\n-----------------------------------\n${biggest_upvote}\n[${biggest_upvote_quote}](${biggest_upvote_quote_url})\n-----------------------------------\n${biggest_downvote}\n[${biggest_downvote_quote}](${biggest_downvote_quote_url})\n-----------------------------------\n`;
+        navigator.clipboard.writeText(text).then( () => {
+            alert("Copied Stats");
+        });
+    });
+  </script>
 </html>

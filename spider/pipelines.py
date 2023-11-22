@@ -17,11 +17,15 @@ class SpiderPipeline:
         return item
 
     def save_item(self, item):
-        UserStats.objects.all().delete()
+        # UserStats.objects.all().delete()
         post = UserStats(
             upvotes=item['upvotes'],
             downvotes=item['downvotes'],
             biggest_upvote=item['biggest_upvote'],
-            biggest_upvote_url=item['biggest_upvote_url']
+            biggest_upvote_url=item['biggest_upvote_url'],
+            biggest_downvote=item['biggest_downvote'],
+            biggest_downvote_url=item['biggest_downvote_url'],
+            biggest_upvote_quote=item['biggest_upvote_quote'],
+            biggest_downvote_quote=item['biggest_downvote_quote'],
         )
         post.save()
