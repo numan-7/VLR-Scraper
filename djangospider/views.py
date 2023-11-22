@@ -9,10 +9,21 @@ import requests
 # function to check if a user exists on vlr
 def user_exists(username):
     try:
+        # request the user page
         response = requests.get(f'https://www.vlr.gg/user/{username}')
-        return response.status_code == 200
+        if response.status_code != 200:
+            return False
+        # find the start of profile name div
+        start_index = response.text.find('<div id="profile-header"')
+        # find the end of the div ^-^
+        end_index = response.text.find('</div>', start_index)
+        # get username from div ^-^
+        div_content = response.text[start_index:end_index]
+        # check if usernames match (case sensitive)
+        return username in div_content
     except requests.RequestException:
         return False
+
 
 # main view for scraping and displaying user data
 def scrape_and_display(request):

@@ -82,7 +82,7 @@ form input, #scrapeBtn, #cancelBtn, .error-refresh {
     position: relative;
 }
 
-#scrapeBtn, #cancelBtnm, .error-refresh {
+#scrapeBtn, #cancelBtn, .error-refresh {
     transition: 150ms ease-in-out;
     color: #fff;
     background-color: var(--btn-color);

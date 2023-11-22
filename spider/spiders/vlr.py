@@ -11,6 +11,7 @@ class UserPostsSpider(scrapy.Spider):
         super(UserPostsSpider, self).__init__(*args, **kwargs)
         self.start_urls = [f'https://vlr.gg/user/{username}']
         self.username = username
+        self.processed_urls = set()
         self.user_item = VlrItem(upvotes=0, downvotes=0, biggest_upvote=-1, biggest_upvote_url='', biggest_downvote=0, biggest_downvote_url='', biggest_upvote_quote ='', biggest_downvote_quote = '')
 
     def parse(self, response):
@@ -33,8 +34,16 @@ class UserPostsSpider(scrapy.Spider):
     def parse_discussion(self, response):
         # find the user's comment(s) by the a tag
         user_posts = response.css(f'a.post-header-author[href*="/user/{self.username}"]')
+        post_url_xpath = "./ancestor::div[contains(@class, 'wf-card post')]/div[contains(@class, 'post-footer')]/div[contains(@class, 'noselect')]/a[contains(@class, 'post-action link')]/@href"                
         # iterate through each comment and updating if necessary, this is self explantory
         for post_author in user_posts:
+            post_url = self.get_full_url(post_author, post_url_xpath, response)
+             # check if url is already processed
+            if post_url in self.processed_urls: 
+                continue
+            # add 2 set :P
+            self.processed_urls.add(post_url)
+            
             upvote_count = post_author.xpath('./following-sibling::div[contains(@class,"post-frag-container")]/div[contains(@class,"positive")]/text()').get()
             downvote_count = post_author.xpath('./following-sibling::div[contains(@class,"post-frag-container")]/div[contains(@class,"negative")]/text()').get()
 
@@ -45,7 +54,6 @@ class UserPostsSpider(scrapy.Spider):
             self.user_item['downvotes'] += downvote_count
 
             text_content = "./ancestor::div[contains(@class, 'wf-card post')]/div[contains(@class, 'post-body')]/p"
-            post_url_xpath = "./ancestor::div[contains(@class, 'wf-card post')]/div[contains(@class, 'post-footer')]/div[contains(@class, 'noselect')]/a[contains(@class, 'post-action link')]/@href"                
             
             if upvote_count > self.user_item['biggest_upvote']:
                 self.user_item['biggest_upvote'] = upvote_count
@@ -64,6 +72,10 @@ class UserPostsSpider(scrapy.Spider):
 
     def get_full_quote(self, post_author, text_content):
         p_tags = post_author.xpath(text_content)
+        # if top comment is in a spoiler div ^-^
+        if not p_tags:
+            text_content = "./ancestor::div[contains(@class, 'wf-card post')]/div[contains(@class, 'post-body')]//div[contains(@class, 'spoiler js-post-spoiler')]/p"
+            p_tags = post_author.xpath(text_content)
         all_text_contents = []
         for p in p_tags:
             # pirect text 
