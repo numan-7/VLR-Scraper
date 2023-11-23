@@ -2,7 +2,7 @@
 
 VLR Scrapy is a web scraper for vlr.gg that allows users to view their upvote/downvote/net counts and their most upvoted/downvoted posts.
 
-<img src = "https://github.com/numan-7/VLR-Scraper/assets/101899800/3b7d460f-cb3f-4e61-9f67-8567f870e942" />
+<img src = "https://github.com/numan-7/VLR-Scraper/assets/101899800/63947b32-97bf-4ebb-aa46-020feae071bf" />
 
 ## Setup
 
