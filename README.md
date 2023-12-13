@@ -13,7 +13,7 @@ $ git clone git@github.com:numan-7/VLR-Scraper.git
 $ cd VLR-Scraper
 ```
 
-Install Docker & Docker-Compose:
+Install Docker & Docker-Compose: 
 
 ```sh
 $ sudo apt update
