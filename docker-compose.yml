@@ -9,6 +9,7 @@ services:
   web:
     build:
       context: .
+    image: myapp_web:latest
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/usr/src/app
@@ -22,6 +23,7 @@ services:
   celery:
     build:
       context: .
+    image: myapp_celery:latest
     command: celery -A djangospider worker --pool=solo -E
     volumes:
       - .:/usr/src/app
