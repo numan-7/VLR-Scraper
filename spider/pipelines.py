@@ -27,5 +27,9 @@ class SpiderPipeline:
             biggest_downvote_url=item['biggest_downvote_url'],
             biggest_upvote_quote=item['biggest_upvote_quote'],
             biggest_downvote_quote=item['biggest_downvote_quote'],
+            upvote_count=item['upvote_count'],
+            downvote_count=item['downvote_count'],
+            dead_count=item['dead_count'],
+            y0y_count=item['y0y_count']
         )
         post.save()

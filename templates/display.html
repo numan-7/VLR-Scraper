@@ -106,6 +106,10 @@
     <footer>
         <a href="https://github.com/numan-7/vlr-webscraping" target="_blank" class="footer-link"><i class="fab fa-github"></i> view on github</a>                 
     </footer>
+    <span class="display: none;" id="upvote_count">{{posts.upvote_count}}</span>
+    <span class="display: none;" id="downvote_count">{{posts.downvote_count}}</span>
+    <span class="display: none;" id="dead_count">{{posts.dead_count}}</span>
+    <span class="display: none;" id="y0y_count">{{posts.y0y_count}}</span>
   </body>
   <script src = "/static/js/display.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script> 
@@ -138,8 +142,13 @@
         const biggest_downvote_quote = $("#downvoted-quote").text();
         const biggest_upvote_quote_url = $("#upvoted-link").attr("href");
         const biggest_downvote_quote_url = $("#downvoted-link").attr("href");
+        const upvote_count = parseInt($("#upvote_count").text());
+        const downvote_count = parseInt($("#downvote_count").text());
+        const dead_count = parseInt($("#dead_count").text());
+        const y0y_count = parseInt($("#y0y_count").text());
+        console.log(upvote_count, downvote_count, dead_count, y0y_count);
         const formatRow = (label, value) => `${label.padEnd(15)}: ${value}`;
-        const text = `${username}\n-----------------------------------\n${formatRow('total upvotes', total_upvotes)}\n${formatRow('total downvotes', total_downvotes)}\n${formatRow('net votes', net)}\n-----------------------------------\n${biggest_upvote}\n[${biggest_upvote_quote}](${biggest_upvote_quote_url})\n-----------------------------------\n${biggest_downvote}\n[${biggest_downvote_quote}](${biggest_downvote_quote_url})\n-----------------------------------\n`;
+        const text = `${username}\n-----------------------------------\n${formatRow('total upvotes', total_upvotes)}\n${formatRow('total downvotes', total_downvotes)}\n${formatRow('net votes', net)}\n-----------------------------------\n${formatRow('num of upvoted posts', upvote_count)}\n${formatRow('num of downvoted posts', downvote_count)}\n${formatRow('num of dead posts', dead_count)}\n${formatRow('y0y counter', y0y_count)}\n-----------------------------------\n${biggest_upvote}\n[${biggest_upvote_quote}](${biggest_upvote_quote_url})\n-----------------------------------\n${biggest_downvote}\n[${biggest_downvote_quote}](${biggest_downvote_quote_url})\n-----------------------------------\nplease note that total num of upvote/downvote/dead count may not reflect your total post count as your posts can be deleted.`;
         navigator.clipboard.writeText(text).then( () => {
             alert("Copied Stats");
         });
