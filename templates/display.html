@@ -110,6 +110,8 @@
     <span class="display: none;" id="downvote_count">{{posts.downvote_count}}</span>
     <span class="display: none;" id="dead_count">{{posts.dead_count}}</span>
     <span class="display: none;" id="y0y_count">{{posts.y0y_count}}</span>
+    <span class="display: none;" id="most_replied_user">{{most_replied_user}}</span>
+    <span class="display: none;" id="most_replies_count">{{most_replies_count}}</span>
   </body>
   <script src = "/static/js/display.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script> 
@@ -146,9 +148,11 @@
         const downvote_count = parseInt($("#downvote_count").text());
         const dead_count = parseInt($("#dead_count").text());
         const y0y_count = parseInt($("#y0y_count").text());
+        const most_replied_user = $("#most_replied_user").text();
+        const most_replies_count = parseInt($("#most_replies_count").text());
         console.log(upvote_count, downvote_count, dead_count, y0y_count);
         const formatRow = (label, value) => `${label.padEnd(15)}: ${value}`;
-        const text = `${username}\n-----------------------------------\n${formatRow('total upvotes', total_upvotes)}\n${formatRow('total downvotes', total_downvotes)}\n${formatRow('net votes', net)}\n-----------------------------------\n${formatRow('num of upvoted posts', upvote_count)}\n${formatRow('num of downvoted posts', downvote_count)}\n${formatRow('num of dead posts', dead_count)}\n${formatRow('y0y counter', y0y_count)}\n-----------------------------------\n${biggest_upvote}\n[${biggest_upvote_quote}](${biggest_upvote_quote_url})\n-----------------------------------\n${biggest_downvote}\n[${biggest_downvote_quote}](${biggest_downvote_quote_url})\n-----------------------------------\nplease note that total num of upvote/downvote/dead count may not reflect your total post count as your posts can be deleted.`;
+        const text = `${username}\n-----------------------------------\n${formatRow('total upvotes', total_upvotes)}\n${formatRow('total downvotes', total_downvotes)}\n${formatRow('net votes', net)}\n-----------------------------------\n${formatRow('num of upvoted posts', upvote_count)}\n${formatRow('num of downvoted posts', downvote_count)}\n${formatRow('num of dead posts', dead_count)}\n${formatRow('y0y counter', y0y_count)}\n${formatRow('your biggest and first fan (excluding self)', most_replied_user)}\n${formatRow('number of times replied', most_replies_count)}\n-----------------------------------\n${biggest_upvote}\n[${biggest_upvote_quote}](${biggest_upvote_quote_url})\n-----------------------------------\n${biggest_downvote}\n[${biggest_downvote_quote}](${biggest_downvote_quote_url})\n-----------------------------------\nplease note that total num of upvote/downvote/dead count may not reflect your total post count as your posts can be deleted.\nalso note that biggest fan is basically the user that has been the first reply to your comments, not threads`;
         navigator.clipboard.writeText(text).then( () => {
             alert("Copied Stats");
         });

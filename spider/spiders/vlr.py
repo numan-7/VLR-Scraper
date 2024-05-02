@@ -24,7 +24,8 @@ class UserPostsSpider(scrapy.Spider):
             biggest_downvote=0, 
             biggest_downvote_url='', 
             biggest_upvote_quote ='', 
-            biggest_downvote_quote = ''
+            biggest_downvote_quote = '',
+            reply_user={}
         )
 
     def parse(self, response):
@@ -64,12 +65,11 @@ class UserPostsSpider(scrapy.Spider):
         # iterate through each comment and updating if necessary, this is self explantory
         for post_author in user_posts:
             post_url = self.get_full_url(post_author, post_url_xpath, response)
-             # check if url is already processed
+            # check if url is already processed
             if post_url in self.processed_urls: 
                 continue
             # add 2 set :P
             self.processed_urls.add(post_url)
-            
             upvote_count = post_author.xpath('./following-sibling::div[contains(@class,"post-frag-container")]/div[contains(@class,"positive")]/text()').get()
             downvote_count = post_author.xpath('./following-sibling::div[contains(@class,"post-frag-container")]/div[contains(@class,"negative")]/text()').get()
             neutral_count = post_author.xpath('./following-sibling::div[contains(@class,"post-frag-container")]/div[contains(@class,"neutral")]/text()').get()
@@ -78,9 +78,20 @@ class UserPostsSpider(scrapy.Spider):
             downvote_count = int(downvote_count) if downvote_count else 0
             neutral_count = int(neutral_count) if neutral_count else -1
 
+            first_reply_username = (post_author.xpath('./ancestor::div[contains(@class, "threading")]/div[contains(@class, "threading")]/descendant::a[contains(@class, "post-header-author")]/text()').get() or "").strip()
+            if first_reply_username and first_reply_username != self.username:
+                # Ensure that reply_user is a dictionary before attempting to modify it
+                if isinstance(self.user_item['reply_user'], dict):
+                    if first_reply_username in self.user_item['reply_user']:
+                        self.user_item['reply_user'][first_reply_username] += 1
+                    else:
+                        self.user_item['reply_user'][first_reply_username] = 1
+                else:
+                    # If it's not a dictionary, reinitialize it correctly
+                    self.user_item['reply_user'] = {first_reply_username: 1}
+
             self.user_item['upvotes'] += upvote_count
             self.user_item['downvotes'] += downvote_count
-            
             if upvote_count > 0 and downvote_count == 0:
                 self.user_item['upvote_count'] += 1
             elif downvote_count < 0 and upvote_count == 0:

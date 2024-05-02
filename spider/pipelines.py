@@ -30,6 +30,9 @@ class SpiderPipeline:
             upvote_count=item['upvote_count'],
             downvote_count=item['downvote_count'],
             dead_count=item['dead_count'],
-            y0y_count=item['y0y_count']
+            y0y_count=item['y0y_count'],
+            reply_user=item[
+                'reply_user'
+            ]        
         )
         post.save()

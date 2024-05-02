@@ -59,10 +59,21 @@ def scrape_and_display(request):
     else:
         first_time = 1
 
+    most_replied_user = ''
+    most_replies_count = 0
+
+    if posts and completed == 1:
+        most_replied_user = max(posts.reply_user, key=posts.reply_user.get)
+        most_replies_count = posts.reply_user[most_replied_user]
+
+
+
     context = {
         'form': form,
         'posts': posts,
         'username': username,
+        'most_replied_user': most_replied_user,
+        'most_replies_count': most_replies_count,
         'is_completed': completed,
         'first_time': first_time,
         'error': 0,
