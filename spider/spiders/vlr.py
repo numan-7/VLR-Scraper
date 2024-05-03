@@ -78,17 +78,17 @@ class UserPostsSpider(scrapy.Spider):
             downvote_count = int(downvote_count) if downvote_count else 0
             neutral_count = int(neutral_count) if neutral_count else -1
 
-            first_reply_username = (post_author.xpath('./ancestor::div[contains(@class, "threading")]/div[contains(@class, "threading")]/descendant::a[contains(@class, "post-header-author")]/text()').get() or "").strip()
-            if first_reply_username and first_reply_username != self.username:
-                # Ensure that reply_user is a dictionary before attempting to modify it
-                if isinstance(self.user_item['reply_user'], dict):
-                    if first_reply_username in self.user_item['reply_user']:
-                        self.user_item['reply_user'][first_reply_username] += 1
+            reply_usernames = post_author.xpath('./ancestor::div[contains(@class, "threading")]/div[contains(@class, "threading")]/descendant::a[contains(@class, "post-header-author")]/text()')
+            for username in reply_usernames:
+                username = username.get().strip()
+                if username and username != self.username:
+                    if isinstance(self.user_item['reply_user'], dict):
+                        if username in self.user_item['reply_user']:
+                            self.user_item['reply_user'][username] += 1
+                        else:
+                            self.user_item['reply_user'][username] = 1
                     else:
-                        self.user_item['reply_user'][first_reply_username] = 1
-                else:
-                    # If it's not a dictionary, reinitialize it correctly
-                    self.user_item['reply_user'] = {first_reply_username: 1}
+                        self.user_item['reply_user'] = {username: 1}
 
             self.user_item['upvotes'] += upvote_count
             self.user_item['downvotes'] += downvote_count
