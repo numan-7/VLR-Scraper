@@ -62,11 +62,9 @@ def scrape_and_display(request):
     most_replied_user = ''
     most_replies_count = 0
 
-    if posts and completed == 1:
+    if posts and posts.reply_user and completed == 1:
         most_replied_user = max(posts.reply_user, key=posts.reply_user.get)
         most_replies_count = posts.reply_user[most_replied_user]
-
-
 
     context = {
         'form': form,
