@@ -12,6 +12,7 @@ class UserPostsSpider(scrapy.Spider):
         self.start_urls = [f'https://vlr.gg/user/{username}']
         self.username = username
         self.processed_urls = set()
+        self.processed_replies = set()
         self.user_item = VlrItem(
             upvotes=0, 
             downvotes=0, 
@@ -79,9 +80,15 @@ class UserPostsSpider(scrapy.Spider):
             neutral_count = int(neutral_count) if neutral_count else -1
 
             reply_usernames = post_author.xpath('./ancestor::div[contains(@class, "threading")]/div[contains(@class, "threading")]/descendant::a[contains(@class, "post-header-author")]/text()')
-            for username in reply_usernames:
+            reply_data_ids = post_author.xpath('./ancestor::div[contains(@class, "threading")]/div[contains(@class, "threading")]/descendant::div[contains(@class, "report-form")]/@data-post-id')
+            reply_list = []
+            for data_id in reply_data_ids:
+                reply_data_id = data_id.get().strip()
+                reply_list.append(reply_data_id)
+
+            for idx, username in enumerate(reply_usernames):
                 username = username.get().strip()
-                if username and username != self.username:
+                if username and username != self.username and reply_list[idx] not in self.processed_replies:
                     if isinstance(self.user_item['reply_user'], dict):
                         if username in self.user_item['reply_user']:
                             self.user_item['reply_user'][username] += 1
@@ -89,6 +96,7 @@ class UserPostsSpider(scrapy.Spider):
                             self.user_item['reply_user'][username] = 1
                     else:
                         self.user_item['reply_user'] = {username: 1}
+                    self.processed_replies.add(reply_list[idx])
 
             self.user_item['upvotes'] += upvote_count
             self.user_item['downvotes'] += downvote_count
