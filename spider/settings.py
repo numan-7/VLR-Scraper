@@ -1,4 +1,7 @@
-import os, sys, django
+import os
+import sys
+import django
+import logging
 
 BOT_NAME = "spider"
 
@@ -16,6 +19,9 @@ FEED_EXPORT_ENCODING = "utf-8"
 ITEM_PIPELINES = {
     'spider.pipelines.SpiderPipeline': 300,
 }
+
+# Configure logging levels
+LOG_LEVEL = 'WARNING'  
 
 sys.path.append('/mnt/c/Users/Yor/Desktop/portfolio/vlr-webscraping')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'scraper.settings'

@@ -107,10 +107,7 @@ class UserPostsSpider(scrapy.Spider):
             elif neutral_count == 0 and upvote_count == 0 and downvote_count == 0:
                 self.user_item['dead_count'] += 1
 
-            # get full quote and then check for y0y in quote
             full_text_content = self.get_full_quote(post_author)
-            if 'y0y' in full_text_content:
-                self.user_item['y0y_count'] += 1
 
             if upvote_count > self.user_item['biggest_upvote'] or original_post_upvotes > self.user_item['biggest_upvote']:
                 self.user_item['biggest_upvote'] = upvote_count if upvote_count > original_post_upvotes else original_post_upvotes

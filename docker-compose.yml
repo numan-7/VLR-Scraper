@@ -6,19 +6,42 @@ services:
     networks:
       - app-network
 
+  postgres:
+    image: postgres:16-bookworm
+    ports:
+      - 5432:5432
+    networks:
+      - app-network
+    environment:
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=myproject
+
   web:
     build:
       context: .
     image: myapp_web:latest
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "
+        python manage.py makemigrations &&
+        python manage.py migrate &&
+        python manage.py runserver 0.0.0.0:8000
+      "
     volumes:
       - .:/usr/src/app
     ports:
       - "8000:8000"
     depends_on:
       - redis
+      - postgres
     networks:
       - app-network
+    environment:
+      - DATABASE_NAME=myproject
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=mypassword
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
 
   celery:
     build:
@@ -29,8 +52,15 @@ services:
       - .:/usr/src/app
     depends_on:
       - redis
+      - postgres
     networks:
       - app-network
+    environment:
+      - DATABASE_NAME=myproject
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=mypassword
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
 
 networks:
   app-network:
