@@ -26,3 +26,9 @@ LOG_LEVEL = 'WARNING'
 sys.path.append('/mnt/c/Users/Yor/Desktop/portfolio/vlr-webscraping')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'scraper.settings'
 django.setup()
+
+DOWNLOADER_MIDDLEWARES = {
+    'spider.middlewares.ProxyMiddleware': 350,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 400,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+}
