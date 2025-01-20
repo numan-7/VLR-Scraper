@@ -1,6 +1,6 @@
-# VLR Scraper - VLR.gg Web Scraper
+# Forum Scraper 
 
-VLR Scrapy is a web scraper for vlr.gg that allows users to view their upvote/downvote/net counts and their most upvoted/downvoted posts.
+Forum Scraper is a web scraper for vlr.gg that allows users to view their upvote/downvote/net counts and their most upvoted/downvoted posts.
 
 <img src = "https://github.com/numan-7/VLR-Scraper/assets/101899800/63947b32-97bf-4ebb-aa46-020feae071bf" />
 
